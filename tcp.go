@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
 	"log"
 	"net"
 )
@@ -16,7 +15,6 @@ func handleTCP(c net.Conn) {
 	//Read from the client
 	//and pass the same to the TLS
 	buffer := read(c)
-	fmt.Println(buffer)
 	dns.Write(buffer)
 
 	//Send back the same respone

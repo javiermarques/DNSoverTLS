@@ -10,7 +10,7 @@ import (
 func handleUDP(pc net.PacketConn) {
 	for {
 		//simple read
-		buffer := make([]byte, 1024)
+		buffer := make([]byte, 4096)
 		n, addr, err := pc.ReadFrom(buffer)
 		if err != nil {
 			log.Fatal(err.Error())
