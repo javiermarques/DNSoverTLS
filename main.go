@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"io"
 	"log"
 	"net"
@@ -14,33 +13,24 @@ func main() {
 	}
 	defer l.Close()
 
+	// listen to incoming udp packets
+	pc, err := net.ListenPacket("udp", ":53")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer pc.Close()
+
+	go handleUDP(pc)
 	for {
-		// Wait for a connection.
 		conn, err := l.Accept()
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		go func(c net.Conn) {
-			//Connect to cloudflare
-			dns, err := tls.Dial("tcp", "1.1.1.1:853", &tls.Config{})
-			if err != nil {
-				log.Fatal(err.Error())
-			}
-			//Read from the client
-			//and pass the same to the TLS
-			buffer := read(c)
-			dns.Write(buffer)
-
-			//Send back the same respone
-			response := read(dns)
-			c.Write(response)
-
-			dns.Close()
-			c.Close()
-		}(conn)
+		go handleTCP(conn)
 	}
 }
 
+//helper function to read tcp connection
 func read(c net.Conn) []byte {
 	//big buffer
 	response := make([]byte, 0, 4096)
