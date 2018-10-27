@@ -20,7 +20,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		func(c net.Conn) {
+		go func(c net.Conn) {
 			//Connect to cloudflare
 			dns, err := tls.Dial("tcp", "1.1.1.1:853", &tls.Config{})
 			if err != nil {
