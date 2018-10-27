@@ -1,10 +1,35 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"io"
 	"log"
 	"net"
+	"os"
+	"strconv"
 )
+
+var ip, port *string
+
+func init() {
+	ip = flag.String("ip", "1.1.1.1", "Remote Name Server ip address")
+	port = flag.String("port", "853", "Remote Port")
+
+	flag.Parse()
+
+	if net.ParseIP(*ip) == nil {
+		fmt.Fprintln(os.Stderr, "Bad IP address")
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+	portNumber, _ := strconv.Atoi(*port)
+	if !(portNumber > 0 && portNumber < 65536) {
+		fmt.Fprintln(os.Stderr, "Port Number out of range")
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+}
 
 func main() {
 	l, err := net.Listen("tcp", ":53")
@@ -20,13 +45,14 @@ func main() {
 	}
 	defer pc.Close()
 
-	go handleUDP(pc)
+	address := net.JoinHostPort(*ip, *port)
+	go handleUDP(pc, address)
 	for {
 		conn, err := l.Accept()
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		go handleTCP(conn)
+		go handleTCP(conn, address)
 	}
 }
 

@@ -7,7 +7,7 @@ import (
 	"net"
 )
 
-func handleUDP(pc net.PacketConn) {
+func handleUDP(pc net.PacketConn, address string) {
 	for {
 		//simple read
 		buffer := make([]byte, 4096)
@@ -22,7 +22,7 @@ func handleUDP(pc net.PacketConn) {
 		binary.BigEndian.PutUint16(request, uint16(n))
 		request = append(request, buffer...)
 
-		dns, err := tls.Dial("tcp", "1.1.1.1:853", &tls.Config{})
+		dns, err := tls.Dial("tcp", address, &tls.Config{})
 		if err != nil {
 			log.Fatal(err.Error())
 		}

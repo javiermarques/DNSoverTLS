@@ -6,9 +6,9 @@ import (
 	"net"
 )
 
-func handleTCP(c net.Conn) {
+func handleTCP(c net.Conn, address string) {
 	//Connect to cloudflare
-	dns, err := tls.Dial("tcp", "1.1.1.1:853", &tls.Config{})
+	dns, err := tls.Dial("tcp", address, &tls.Config{})
 	if err != nil {
 		log.Fatal(err.Error())
 	}
